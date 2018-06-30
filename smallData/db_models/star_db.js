@@ -55,6 +55,11 @@ const star = new Schema({
     // the values are ISODate object
     usePushEach:true
 });
-
+star.index({name:1, contentId:1}, {unique:true});
+star.index({name:1, duration:-1});
+star.index({name:1, view:-1});
+star.index({name:1, favorite:-1});
+star.index({name:1, rating:-1});
+star.index({name:1, releaseDate:-1});
 var Stars = mongoose.model("star", star); // Dish => Dishes automatically.
 module.exports = Stars;

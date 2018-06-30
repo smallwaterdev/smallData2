@@ -56,6 +56,12 @@ const genre = new Schema({
     // the values are ISODate object
     usePushEach:true
 });
+genre.index({name:1, contentId:1}, {unique:true});
+genre.index({name:1, duration:-1});
+genre.index({name:1, view:-1});
+genre.index({name:1, favorite:-1});
+genre.index({name:1, rating:-1});
+genre.index({name:1, releaseDate:-1});
 
 var Genres = mongoose.model("genre", genre); // Dish => Dishes automatically.
 module.exports = Genres;

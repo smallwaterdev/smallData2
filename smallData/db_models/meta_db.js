@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 // 1. meta genre 10, which means we have 10 different genres.
 // db.metas.createIndex({field: 1, name: 1}, {unique: true})
 // db.metas.createIndex({field: 1, name: 1, counter, -1})
-const Meta = new Schema({
+const meta = new Schema({
     field: { // genre, meta,
         type:String,
         required: true
@@ -35,5 +35,8 @@ const Meta = new Schema({
     usePushEach:true
 });
 
-const Metas = mongoose.model("meta", Meta);
+meta.index({field: -1, name: -1}, {unique: true});
+meta.index({field: -1, name: -1, counter: -1});
+
+const Metas = mongoose.model("meta", meta);
 module.exports = Metas;

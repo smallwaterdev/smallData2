@@ -26,7 +26,7 @@ const VideoUrl = new Schema({
  * db.contents.createIndex({favorite:-1})
  * db.contents.createIndex({releaseDate:-1})
  */
-const Content = new Schema({
+const content = new Schema({
     _id:{
         type: mongoose.Schema.Types.ObjectId,
         default:mongoose.Types.ObjectId(),
@@ -117,5 +117,11 @@ const Content = new Schema({
     usePushEach:true
 });
 
-const Contents = mongoose.model("content", Content); // Dish => Dishes automatically.
+content.index({view:-1});
+content.index({duration:-1});
+content.index({rating:-1});
+content.index({favorite:-1});
+content.index({releaseDate:-1});
+
+const Contents = mongoose.model("content", content); // Dish => Dishes automatically.
 module.exports = Contents;
