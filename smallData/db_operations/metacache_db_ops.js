@@ -166,29 +166,65 @@ function setProfileUrl(field, name, url, callback){
     });
 }
 
+/**
+ * 
+ * @param {} field 
+ * @param {*} callback ({success: boolean, reasons:[string], value:number}); // value = 0, also return true.
+ */
+function __countMetaDBMeta(field, callback){
+    if(valid_meta_fields.indexOf(field) === -1 && field !== 'total'){
+        callback({success: false, reasons: [`Invalid field ${field} which is not supported on querymetadbmeta`]});
+        return;
+    }
+    if(field === 'total'){
+        contentDB.find({}, (err, contents)=>{
+            if(err){
+                callback({success: false,  reasons:[err.message]});
+            }else{
+                callback({success: true, value: contents.length, reasons:[]});
+            }
+        });
+    }else{
+        metaDB.find({field: field}, (err, items)=>{
+            if(err){
+                callback({success: false,  reasons:[err.message]});
+            }else{
+                callback({success: true, value: items.length, reasons:[]});
+            }
+        });
+    }
+}
+
+/**
+ * This function will update and count all contents {meta: total}
+ * all genre {meta:genre}
+ * all starname {meta: starname}
+ * all studio {meta: studio}
+ * all director {meta: director} 
+ * @param {*} callback 
+ */
+
 function allMetaCache(callback){
-    contentDB.find({}, (err, contents)=>{
-        if(err){
-            callback({success: false, reasons:[err.message]});
-        }else{
-            let num = contents.length;
-            metaDB.findOneAndUpdate({field:"meta", name:"total"}, {counter: num}, {new: true}, (err, result)=>{
-                if(err){
-                    callback({success: false, reasons:[err.message]});
-                }else if(result){
-                    callback({success: true, reasons:[], value: result});
-                }else{
-                    metaDB.create({field:"meta", name:"total", counter: num}, (err, result)=>{
+    scheduler(
+        ['total', 'director', 'studio', 'starname', 'genre'],
+        5,
+        (field, __callback__)=>{
+            __countMetaDBMeta(field, (result)=>{
+                if(result.success){
+                    __refreshMetaDB({field: 'meta', name: field, counter: result.value}, (err, result)=>{
                         if(err){
-                            callback({success: false, reasons:[err.message]});
+                            __callback__(err);
                         }else{
-                            callback({success: true, reasons:[], value: result});
+                            __callback__(null, result);
                         }
-                    });
+                    })
+                }else{
+                    __callback__(result);
                 }
             });
-        }
-    });
+        },
+        callback
+    );
 }
 
 ///////////////////////////////////////////////////////////////////

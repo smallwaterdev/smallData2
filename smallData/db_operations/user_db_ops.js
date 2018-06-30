@@ -334,6 +334,7 @@ function queryMeta(field, value, from, limit, callback){
         });
         return;
     }
+    
     if(value === undefined){
         let from_n = __convertToNonNeg(from);
         if(from_n === -1){
@@ -346,7 +347,7 @@ function queryMeta(field, value, from, limit, callback){
             limit_n = MAX_META_TIEM_NUM;
         }
         const options = {
-            sort: {name: -1},
+            sort: {name: 1},
             skip: from_n,
             limit: limit_n
         };

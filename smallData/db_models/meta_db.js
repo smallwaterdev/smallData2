@@ -35,8 +35,8 @@ const meta = new Schema({
     usePushEach:true
 });
 
-meta.index({field: -1, name: -1}, {unique: true});
-meta.index({field: -1, name: -1, counter: -1});
+meta.index({field: 1, name: 1}, {unique: true});
+meta.index({field: 1, name: 1, counter: -1});
 
 const Metas = mongoose.model("meta", meta);
 module.exports = Metas;
