@@ -24,10 +24,9 @@ const errorTitle = '[Error] smallData manage quickquery';
  */
 
 function recommendHandler(req, res, next){
-    let field = req.params.field;
-    let value = req.params.value;
+    let id = req.params.id;
     let limit = req.params.limit;
-    recommendContents(field, value, limit, (results)=>{
+    recommendContents(id, limit, (results)=>{
         if(results.success){
             if(results.value && results.value.length === 0){
                 res.statusCode = 404;
@@ -41,13 +40,13 @@ function recommendHandler(req, res, next){
     });
 }
 
-recommendRouter.route("/:field/:value")
+recommendRouter.route("/:id/:limit")
 .options(cors.cors, (req, res, next) => {
     res.sendStatus(200);
 })
 .get(cors.cors, recommendHandler);
 
-recommendRouter.route("/:field/:value/:limit")
+recommendRouter.route("/:id")
 .options(cors.cors, (req, res, next) => {
     res.sendStatus(200);
 })

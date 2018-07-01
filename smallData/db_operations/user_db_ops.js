@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const async = require('async');
 const contentDB = require('../db_models/content_db');
 const genreDB = require('../db_models/genre_db');
 const starDB = require('../db_models/star_db');
@@ -10,8 +10,7 @@ const mergeResults = require('./manage_db_ops').mergeResults;
 
 const MAX_NUM_CONTENTS_RETURN = 60;
 const DEFAULT_NUM_CONTENTS_RETURN = 20;
-const DEFAULT_NUM_RECOMMEND_RETURN = 10;
-const MAX_NUM_RECOMMEND_RETURN = 20;
+
 const valid_fields = ["id", "index", "studio", "genre", "director","starname"];
 const valid_sort = ["view", "duration", "rating","favorite", "releaseDate"];
 
@@ -279,15 +278,12 @@ module.exports.quickQueryContents = quickQueryContents;
 ////////////////////////////////////////////////////////////////////////
 //////////////////// recommended function starts ////////////////////////
 ////////////////////////////////////////////////////////////////////////
+const DEFAULT_NUM_RECOMMEND_RETURN = 10;
+const MAX_NUM_RECOMMEND_RETURN = 20;
 
-function __recommendStarContents(starname, limit, callback){
+function __recommendStarContents(id, limit, callback){
     
-    let limit_n = __convertToNonNeg(limit);
-    if(limit_n === -1){
-        limit_n = DEFAULT_NUM_RECOMMEND_RETURN;
-    }else if(limit_n > MAX_NUM_RECOMMEND_RETURN){
-        limit_n = MAX_NUM_RECOMMEND_RETURN;
-    }
+    
     let options =  {};
     options['limit'] = limit_n;
     let sort = valid_sort[1];
@@ -296,18 +292,109 @@ function __recommendStarContents(starname, limit, callback){
     options['skip'] = 0;
     __queryContentsByStarOrGenre('starname', starname, options, callback);
 }
-
-function recommendContents(field, value, limit, callback){
-    switch(field){
-        case "starname":{
-            __recommendStarContents(value, limit, callback);
-        };break;
-
-        default:{
-            console.log('ss');
-            callback({success: false, reasons:[`${field} is not supported`]});
-        };break;
+function __random(from, through){
+    return Math.ceil(Math.random() * (through - from)) + from;
+}
+const hot_genres = [];
+function __filterGenres(genres){
+    let result = [];
+    genres.forEach(ele=>{
+        if(hot_genres.indexOf(ele) !== -1){
+            result.push(ele);
+        }
+    });
+    return result;
+}
+function recommendContents(id, limit, callback){
+    let limit_n = __convertToNonNeg(limit);
+    if(limit_n === -1){
+        limit_n = DEFAULT_NUM_RECOMMEND_RETURN;
+    }else if(limit_n > MAX_NUM_RECOMMEND_RETURN){
+        limit_n = MAX_NUM_RECOMMEND_RETURN;
     }
+    limit_n = limit_n + 1;
+    
+    contentDB.findById(id, (err, content)=>{
+        if(err){
+            callback({success: false, reasons:[err.message]});
+        }else{
+            let results = [];
+            let err_messages = [];
+            let remaining = limit_n;
+            let starnames = content.starnames;
+            let genres = __filterGenres(content.genres);
+            async.series([
+                // star
+                (__callback__)=>{
+                    if(starnames.length >= 1){
+                        let query = starDB.find({name:starnames[0]}, null, {skip: __random(0, 10), limit: Math.ceil(remaining / 3)}).populate({path:'contentId', select: returned_fields});
+                        query.exec((err, contents)=>{
+                            if(err){
+                                err_messages.push(err.message);
+                                __callback__();
+                            }else{
+                                contents.forEach(ele=>{
+                                    results.push(ele.contentId);
+                                    remaining--;
+                                });
+                                __callback__();
+                            }
+                        });
+                    }else{
+                        __callback__();
+                    }
+                },
+                (__callback__)=>{
+                // genre
+                    if(genres.length === 0){
+                        __callback__();
+                    }else{
+                        let item_pre_genre = Math.ceil(remaining / genres.length);
+                        scheduler(genres, 4, (genre, __callback____)=>{
+                            let query = genreDB.find({name: genre}, null, {skip: __random(0,200), limit: item_pre_genre}).populate({path:'contentId', select: returned_fields});
+                            query.exec((err, contents)=>{
+                                if(err){
+                                    __callback____(err);
+                                }else{
+                                    contents.forEach(ele=>{
+                                        if(remaining > 0){
+                                            results.push(ele.contentId);
+                                            remaining--;
+                                        }
+                                    });
+                                    __callback____();
+                                }
+                            });
+                        },(result_)=>{
+                            if(result_.success){
+                                __callback__();
+                            }else{
+                                err_messages = err_messages.concat(result_.reasons);
+                                __callback__();
+                            }
+                        });
+                    }
+                }, 
+                (__callback__)=>{
+                    if(remaining > 0){
+                        contentDB.find({}, returned_fields, {skip: __random(0, 4000), limit: remaining}, (err, contents)=>{
+                            if(err){
+                                err_messages.push(err.message);
+                                __callback__();
+                            }else{
+                                results = results.concat(contents);
+                                __callback__();
+                            }
+                        });
+                    }else{
+                        __callback__();
+                    }
+                }
+            ],(err, result)=>{
+                callback({success: err_messages.length === 0, reasons: err_messages, value: results});
+            });
+        }
+    });
 }
 
 module.exports.recommendContents = recommendContents;
