@@ -312,7 +312,7 @@ function recommendContents(id, limit, callback){
     }else if(limit_n > MAX_NUM_RECOMMEND_RETURN){
         limit_n = MAX_NUM_RECOMMEND_RETURN;
     }
-    limit_n = limit_n + 1;
+    //limit_n = limit_n + 1;
     
     contentDB.findById(id, (err, content)=>{
         if(err){
@@ -334,8 +334,10 @@ function recommendContents(id, limit, callback){
                                 __callback__();
                             }else{
                                 contents.forEach(ele=>{
-                                    results.push(ele.contentId);
-                                    remaining--;
+                                    if(ele.contentId._id !== id){
+                                        results.push(ele.contentId);
+                                        remaining--;
+                                    }
                                 });
                                 __callback__();
                             }
@@ -357,7 +359,7 @@ function recommendContents(id, limit, callback){
                                     __callback____(err);
                                 }else{
                                     contents.forEach(ele=>{
-                                        if(remaining > 0){
+                                        if(ele.contentId._id !== id && remaining > 0){
                                             results.push(ele.contentId);
                                             remaining--;
                                         }
