@@ -27,6 +27,8 @@ user_app.use(bodyParser.json());
 ///////// Database configurations //////////
 const mongoose = require('mongoose');
 const bluebird = require('bluebird');
+const url_prefix = "/user/api";
+
 mongoose.Promise = bluebird;
 //mongoose.set('debug', true);
 const connect = mongoose.connect(mongodb_url, {
@@ -39,11 +41,11 @@ connect.then((db)=>{
 });
 
 
-user_app.use('/query', user_query_route);
-user_app.use('/querymeta', user_query_meta_route);
-user_app.use('/quickquery', user_quick_query_route);
-user_app.use('/recommendlist', user_recommended_route)
-user_app.use('/search',user_search_route );
+user_app.use(url_prefix + '/query', user_query_route);
+user_app.use(url_prefix + '/querymeta', user_query_meta_route);
+user_app.use(url_prefix + '/quickquery', user_quick_query_route);
+user_app.use(url_prefix + '/recommendlist', user_recommended_route)
+user_app.use(url_prefix + '/search',user_search_route );
 user_app.use(function(req, res, next) {
     next(createError(404));
 });
