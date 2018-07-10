@@ -98,23 +98,24 @@ manage_app.get('*', manage_authentication);
 manage_app.post('*', manage_authentication);
 manage_app.put('*', manage_authentication);
 manage_app.delete('*', manage_authentication);
+const url_prefix = "/manager/api/";
 // manage.all('*', cors());
-manage_app.use('/manage/query', queryRoute);
-manage_app.use('/manage/query-meta', querymetaRoute);
-manage_app.use('/manage/create', createRoute);
-manage_app.use('/manage/update', updateRoute);
-manage_app.use('/manage/remove', deleteRoute);
+manage_app.use(url_prefix + '/manage/query', queryRoute);
+manage_app.use(url_prefix + '/manage/query-meta', querymetaRoute);
+manage_app.use(url_prefix + '/manage/create', createRoute);
+manage_app.use(url_prefix + '/manage/update', updateRoute);
+manage_app.use(url_prefix + '/manage/remove', deleteRoute);
 
-manage_app.use('/metacache/update', metaCacheUpdateRoute);
-manage_app.use('/metacache/all', metaCacheALLRoute);
-manage_app.use('/metacache/remove', metaCacheRemoveRoute);
-manage_app.use('/metacache/setprofile', setProfileRoute);
+manage_app.use(url_prefix + '/metacache/update', metaCacheUpdateRoute);
+manage_app.use(url_prefix + '/metacache/all', metaCacheALLRoute);
+manage_app.use(url_prefix + '/metacache/remove', metaCacheRemoveRoute);
+manage_app.use(url_prefix + '/metacache/setprofile', setProfileRoute);
 
-manage_app.use('/normalize/remove', normalizeRemoveRouter);
-manage_app.use('/normalize/update', normalizeUpdateRouter);
+manage_app.use(url_prefix + '/normalize/remove', normalizeRemoveRouter);
+manage_app.use(url_prefix + '/normalize/update', normalizeUpdateRouter);
 
-manage_app.use('/reverseindex/create', reverseIndexCreateRoute);
-manage_app.use('/reverseindex/remove', reverseIndexRemoveRoute);
+manage_app.use(url_prefix + '/reverseindex/create', reverseIndexCreateRoute);
+manage_app.use(url_prefix + '/reverseindex/remove', reverseIndexRemoveRoute);
 //manage_app.use('/normalize', normalizeRoute);
 //////////// error ////////////////
 // catch 404 and forward to error handler
