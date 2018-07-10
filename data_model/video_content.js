@@ -106,6 +106,13 @@ const lastnames = [
     'mizuno',
     'shinoda'
 ];
+function washName(){
+    //remove (), -,  number, split long name
+    //http://localhost:4200/pornstar/aika-mirei-ichikawa-tsubasa-hoshina-ai-ooto-wakaha-sazanami-rino-yuuri-maina
+    //http://localhost:4200/pornstar/haruka-ohsawa%EF%BC%8Cnana-kaisaki%EF%BC%8Cmayumi%EF%BC%8Criku-sena
+    //http://localhost:4200/pornstar/av-9898-shinoda-ayumi
+
+}
 function firstname_lastname_converter(starname){
     let starname_ = starname.split('-');
     if(starname_.length === 2){

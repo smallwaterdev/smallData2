@@ -1,4 +1,4 @@
-const smallData_ip = "192.168.1.100";
+const smallData_ip = "localhost";
 const smallData_user_port = 3000;
 const smallData_store_port = 3001;
 const smallData_secure_store_port = smallData_store_port + 443;

@@ -16,6 +16,7 @@ const user_query_route = require('./smallDate_routes/user_routes/query_route');
 const user_query_meta_route = require('./smallDate_routes/user_routes/querymeta_route');
 const user_quick_query_route = require('./smallDate_routes/user_routes/quickquery_route');
 const user_recommended_route = require('./smallDate_routes/user_routes/recommend_route');
+const user_search_route = require('./smallDate_routes/user_routes/search_route');
 ///////// Express configuration //////////
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -42,6 +43,7 @@ user_app.use('/query', user_query_route);
 user_app.use('/querymeta', user_query_meta_route);
 user_app.use('/quickquery', user_quick_query_route);
 user_app.use('/recommendlist', user_recommended_route)
+user_app.use('/search',user_search_route );
 user_app.use(function(req, res, next) {
     next(createError(404));
 });

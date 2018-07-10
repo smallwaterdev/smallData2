@@ -23,6 +23,9 @@ const valid_sort = ["view", "duration", "rating", "favorite", "releaseDate", "cr
 */
 
 function __string2NonNegative(value){
+    if(typeof value === 'number'){
+        return value;
+    }
     num = parseInt(value);
     if(value !== num.toString()){
         return -1;
@@ -34,6 +37,7 @@ function __string2NonNegative(value){
     }
 
 }
+module.exports.string2NonNegative = __string2NonNegative;
 /**
  * 
  * @param fields A string cannot be null or undefined

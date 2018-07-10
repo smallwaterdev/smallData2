@@ -17,6 +17,7 @@ const valid_sort = ["view", "duration", "rating","favorite", "releaseDate"];
 const support_recommend_fields = ['starname'];
 const returned_fields = '_id title index videoDomain videoUrl director starnames genres studio duration imgSummaryUrl favorite rating view releaseDate';
 const DEFAULT_SORT = "releaseDate";
+module.exports.returned_fields = returned_fields;
 /**
  * term
  * 1. user content. User content is a document that stored in the contentDB but only returns partial fields
