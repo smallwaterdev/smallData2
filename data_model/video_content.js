@@ -100,23 +100,77 @@ const studio_name_convert = {};
 studio_name_convert["prestige-av"] = "prestige";
 
 
-const lastnames = [
-    'hamasaki', 
-    'sasaki',
-    'mizuno',
-    'shinoda'
-];
-function washName(){
+
+const removed_char = '()';
+const aborted_char = '0123456789';
+// return []
+function washName(name){
     //remove (), -,  number, split long name
     //http://localhost:4200/pornstar/aika-mirei-ichikawa-tsubasa-hoshina-ai-ooto-wakaha-sazanami-rino-yuuri-maina
     //http://localhost:4200/pornstar/haruka-ohsawa%EF%BC%8Cnana-kaisaki%EF%BC%8Cmayumi%EF%BC%8Criku-sena
     //http://localhost:4200/pornstar/av-9898-shinoda-ayumi
-
+    let washed_chars = "";
+    for(let i of name){
+        if(removed_char.indexOf(i) !== -1){
+            
+        }else if(aborted_char.indexOf(i) !== -1){
+            //abort
+            return [];
+        }else{
+            washed_chars += i;
+        }
+    }
+    
 }
+const removed_names = [
+    'jav-idol',
+    'japanese-av-model'
+]
+const lastnames = [
+    'hamasaki', 
+    'sasaki',
+    'mizuno',
+    'mizuki',
+    'shinoda',
+    'hatano',
+    'hoshina',
+    'nikaidou',
+    'kimijima',
+    'nagai',
+    'sazanami',
+    'abe',
+    'kimura'
+];
+const firstnames = [
+    'ayuri',
+    'erika',
+    'shuri',
+    'aki',
+    'aya',
+    'yu',
+    'nao',
+    'yuki',
+    'airi',
+    'mao',
+    'mio',
+    'ai',
+    'asahi',
+    'aya',
+    'yuu',
+    'rika',
+    'sora',
+    'yukari',
+    'honoka',
+    'yukine',
+    'yuuri',
+    'ikumi'
+];
 function firstname_lastname_converter(starname){
     let starname_ = starname.split('-');
     if(starname_.length === 2){
         if(lastnames.indexOf(starname_[0]) !== -1){
+            return starname_[1] + '-' + starname_[0];
+        }else if(firstnames.indexOf(starname_[1] !== -1)){
             return starname_[1] + '-' + starname_[0];
         }else{
             return starname;
@@ -289,6 +343,9 @@ class VideoContent{
             let i = 0; 
             let result = [];
             while(i < this.data.starnames.length){
+                if(removed_names.indexOf(this.data.starnames[i]) !== -1){
+                    continue;
+                }
                 let starname = firstname_lastname_converter(this.data.starnames[i]);
                 if(result.indexOf(starname) === -1){
                     result.push(starname);

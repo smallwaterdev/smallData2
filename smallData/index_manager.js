@@ -38,7 +38,7 @@ const setProfileRoute = require('./smallDate_routes/metacache_routes/setprofile_
 // reverse index route
 const reverseIndexCreateRoute = require('./smallDate_routes/reverse_index_routes/create_route');
 const reverseIndexRemoveRoute = require('./smallDate_routes/reverse_index_routes/delete_route');
-
+const reverseIndexCheckCountRoute = require('./smallDate_routes/reverse_index_routes/check_count_route');
 // for chrome extension
 const javseenRoute = require('./smallDate_routes/javseen_decrypt');
 
@@ -117,6 +117,7 @@ manage_app.use(url_prefix + '/normalize/update', normalizeUpdateRouter);
 
 manage_app.use(url_prefix + '/reverseindex/create', reverseIndexCreateRoute);
 manage_app.use(url_prefix + '/reverseindex/remove', reverseIndexRemoveRoute);
+manage_app.use(url_prefix + '/reverseindex/checkcount', reverseIndexCheckCountRoute);
 //manage_app.use('/normalize', normalizeRoute);
 //////////// error ////////////////
 // catch 404 and forward to error handler

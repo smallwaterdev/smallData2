@@ -9,7 +9,7 @@ const string2NonNegative = require('./manage_db_ops').string2NonNegative;
 const returned_fields = require('./user_db_ops').returned_fields;
 const frequencyWords = [
     'the', 'a', 'an', 'he', 'she', 'is', 'are', 'they', 'it', 'i', 'am',
-    'and', 'sex', 'jav', 'who', 'with', 
+    'and', 'sex', 'jav', 'who', 'with', 'that', 'you', 'for', 'can'
     // wife , sex 2000+
 ];
 /**
@@ -160,7 +160,19 @@ function deleteByWord(word, callback){
 
 module.exports.deleteByWord = deleteByWord;
 
-
+function checkCount(from, limit, callback){
+    let from_n = parseInt(from);
+    let limit_n = parseInt(limit);
+    if(from_n === NaN || from_n < 0){
+        from_n = 0;
+    }
+    if(limit_n === NaN || limit_n < 0){
+        limit_n = 20;
+    }
+    __callback = callback;
+    reverseIndexDB.find({}, 'keyword counter status', {skip: from_n, limit: limit_n, sort:{counter: -1}}, __generalHandler);
+}
+module.exports.checkCount = checkCount;
 
 /**
  * 
