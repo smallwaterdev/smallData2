@@ -4,7 +4,7 @@ const contentDB = require('../db_models/content_db');
 const genreDB = require('../db_models/genre_db');
 const starDB = require('../db_models/star_db');
 const metaDB = require('../db_models/meta_db');
-
+const profileDB = require('../db_models/profile_db');
 const scheduler = require('./metacache_db_ops').scheduler;
 const mergeResults = require('./manage_db_ops').mergeResults;
 
@@ -407,11 +407,64 @@ module.exports.recommendContents = recommendContents;
 ////////////////////////////////////////////////////////////////////////
 
 
+
+////////////////////////////////////////////////////////////////////////
+//////////////////// profile function starts ////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+function queryProfile(field, value, callback){
+    if(typeof field !== 'string' || typeof value !== 'string'){
+        callback({success: false, reasons:['invalid inputs']});
+    }else{
+        profileDB.findOne({field: field, value: value}, 'field value profile_url intro', (err, item)=>{
+            if(err){
+                callback({success: false, reasons:[err.message]});
+            }else if(item){
+                callback({success: true, reasons:[], value: item});
+            }else{
+                callback({success: false, reasons:[`queryProfile ${field} ${value} not found`]}); 
+            }
+        });
+    }
+}
+
+/**
+ * help query meta to query image url
+*/
+function __queryAProfileForQueryMeta(object, callback){
+    queryProfile(object.field, object.name, (result_)=>{
+        if(result_.success){
+            object.profile_url = result_.value.profile_url;
+        }
+        callback({success: true, reasons:[], value: object});
+    });
+}
+function __queryProfilesForQueryMeta(object_arr, callback){
+    scheduler(object_arr, 10, (object, __callback__)=>{
+        queryProfile(object.field, object.name, (result_)=>{
+            if(result_.success){
+                object.profile_url = result_.value.profile_url;
+            }
+            __callback__();
+        });
+    },()=>{
+        callback({success:true, reasons:[], value: object_arr});
+    });
+    
+}
+module.exports.queryProfile = queryProfile;
+
+////////////////////////////////////////////////////////////////////////
+//////////////////// profile function ends ////////////////////////
+////////////////////////////////////////////////////////////////////////
+
+
+
 ////////////////////////////////////////////////////////////////////////
 //////////////////// queryMeta function starts ////////////////////////
 ////////////////////////////////////////////////////////////////////////
 const valid_meta = ["meta", "starname", "genre", "director", "studio"];
-const meta_selected_fields = 'field name counter profile_url';
+const meta_selected_fields = 'field name counter';
 const DEFAULT_META_ITEM_NUM = 20;
 const MAX_META_TIEM_NUM = 60;
 /**
@@ -445,7 +498,8 @@ function queryMeta(field, value, from, limit, callback){
             if(err){
                 callback({success: false, reasons:[err.message]});
             }else{
-                callback({success: true, reasons:[], value: results});
+                __queryProfilesForQueryMeta(results, callback);
+                //callback({success: true, reasons:[], value: results});
             }
         });
     }else{
@@ -453,7 +507,8 @@ function queryMeta(field, value, from, limit, callback){
             if(err){
                 callback({success: false, reasons:[err.message]});
             }else{
-                callback({success: true, reasons:[], value: result});
+                __queryAProfileForQueryMeta(result, callback);
+                //callback({success: true, reasons:[], value: result});
             }
         });
     }

@@ -12,6 +12,18 @@ createReverseIndexRouter.route('/')
 .options(cors.cors, (req, res, next) => {
     res.sendStatus(200);
 })
+/*
+{
+    field: "option"
+    value:{
+        skip:0,
+        limit:20,
+        sort:{
+            releaseDate:-1
+        }
+    }
+}
+*/
 .post(cors.cors, (req, res, next) => {
     if(req.body && req.body.field !== undefined && req.body.value !== undefined){
         switch(req.body.field){

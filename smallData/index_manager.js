@@ -26,6 +26,10 @@ const querymetaRoute = require('./smallDate_routes/manage_routes/querymeta_route
 const deleteRoute = require('./smallDate_routes/manage_routes/delete_route');
 const createRoute = require('./smallDate_routes/manage_routes/create_route');
 const updateRoute = require('./smallDate_routes/manage_routes/update_route');
+// profile
+const removeProfileRoute = require('./smallDate_routes/profile_routes/remove_profile_route');
+const updateProfileRoute = require('./smallDate_routes/profile_routes/update_profile_route');
+
 
 // normalize 
 const normalizeRemoveRouter = require('./smallDate_routes/normalize_routes/normalize_removing_route');
@@ -34,7 +38,7 @@ const normalizeUpdateRouter = require('./smallDate_routes/normalize_routes/norma
 const metaCacheUpdateRoute = require('./smallDate_routes/metacache_routes/updatemeta_route');
 const metaCacheRemoveRoute = require('./smallDate_routes/metacache_routes/removemeta_route');
 const metaCacheALLRoute = require('./smallDate_routes/metacache_routes/allmeta_route');
-const setProfileRoute = require('./smallDate_routes/metacache_routes/setprofile_route');
+
 // reverse index route
 const reverseIndexCreateRoute = require('./smallDate_routes/reverse_index_routes/create_route');
 const reverseIndexRemoveRoute = require('./smallDate_routes/reverse_index_routes/delete_route');
@@ -99,7 +103,6 @@ manage_app.post('*', manage_authentication);
 manage_app.put('*', manage_authentication);
 manage_app.delete('*', manage_authentication);
 const url_prefix = "/manager/api";
-console.log(url_prefix);
 // manage.all('*', cors());
 manage_app.use(url_prefix + '/manage/query', queryRoute);
 manage_app.use(url_prefix + '/manage/query-meta', querymetaRoute);
@@ -107,10 +110,13 @@ manage_app.use(url_prefix + '/manage/create', createRoute);
 manage_app.use(url_prefix + '/manage/update', updateRoute);
 manage_app.use(url_prefix + '/manage/remove', deleteRoute);
 
+manage_app.use(url_prefix + '/profile/update', updateProfileRoute);
+manage_app.use(url_prefix + '/profile/remove', removeProfileRoute);
+
+
 manage_app.use(url_prefix + '/metacache/update', metaCacheUpdateRoute);
 manage_app.use(url_prefix + '/metacache/all', metaCacheALLRoute);
 manage_app.use(url_prefix + '/metacache/remove', metaCacheRemoveRoute);
-manage_app.use(url_prefix + '/metacache/setprofile', setProfileRoute);
 
 manage_app.use(url_prefix + '/normalize/remove', normalizeRemoveRouter);
 manage_app.use(url_prefix + '/normalize/update', normalizeUpdateRouter);

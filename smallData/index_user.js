@@ -17,6 +17,7 @@ const user_query_meta_route = require('./smallDate_routes/user_routes/querymeta_
 const user_quick_query_route = require('./smallDate_routes/user_routes/quickquery_route');
 const user_recommended_route = require('./smallDate_routes/user_routes/recommend_route');
 const user_search_route = require('./smallDate_routes/user_routes/search_route');
+const user_query_profile_route = require('./smallDate_routes/user_routes/query_profile_route');
 ///////// Express configuration //////////
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -44,6 +45,7 @@ connect.then((db)=>{
 user_app.use(url_prefix + '/query', user_query_route);
 user_app.use(url_prefix + '/querymeta', user_query_meta_route);
 user_app.use(url_prefix + '/quickquery', user_quick_query_route);
+user_app.use(url_prefix + '/queryprofile', user_query_profile_route);
 user_app.use(url_prefix + '/recommendlist', user_recommended_route)
 user_app.use(url_prefix + '/search',user_search_route );
 user_app.use(function(req, res, next) {

@@ -129,15 +129,15 @@ function removeMetaCache(field, name, callback){
         return;
     }
     if(name === undefined){
-        /*metaDB.remove({field: field}, (err, result)=>{
+        metaDB.remove({field: field}, (err, result)=>{
             if(err){
                 callback({success: false, reasons: [err.message]});
                 return;
             }else{
                 callback({success: true, reasons:[], value: result});
             }
-        });*/
-        callback({success: false, reasons:['function is not supported now']});
+        });
+        //callback({success: false, reasons:['function is not supported now']});
     }else{
         metaDB.findOneAndRemove({field: field, name: name}, (err, result)=>{
             if(err){
