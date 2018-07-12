@@ -1,4 +1,5 @@
 const fs = require('fs');
+const _ = require('lodash')
 const contentDB = require('./db_models/content_db');
 const metaDB = require('./db_models/meta_db');
 const mongodb_url = require('./config').mongodb_url;
@@ -33,7 +34,7 @@ function __generateContentSiteMap(content){
     <url> 
         <loc>${url_origin + '/content/' + content._id}</loc> 
         <video:video>
-        <video:thumbnail_loc>${content.imgSummaryUrl}</video:thumbnail_loc>
+        <video:thumbnail_loc>${_.escape(content.imgSummaryUrl)}</video:thumbnail_loc>
         <video:title>${content.title}</video:title>
         <video:player_loc allow_embed="yes" autoplay="ap=1">${content.videoUrl}</video:player_loc>
         <video:description>${content.title}</video:description>
