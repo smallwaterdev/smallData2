@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 
 const connect = mongoose.connect(mongodb_url, {});
 //const filename = "sitemap.xml";
-const filename = "./seo/sitemap/sitemap.xml";
+// const filename = "./seo/sitemap/sitemap.xml";
 const url_origin = "http://www.javferry.com"
 function initSiteMap(filename, callback){
     fs.writeFile(filename, `<?xml version="1.0" encoding="UTF-8"?>
@@ -111,21 +111,32 @@ function addByMeta(filename, meta, from, limit, callback){
     });
 }
 
+
+/**
+ * 1. meta
+ * 2. starname 1.page
+ * 3. category
+ * 4. director
+ * 5. studio
+ * 6. content 5000
+ * 7. content 5000
+*/
+const filename = "./seo/sitemap/sitemap_content_5000_1.xml";
 connect.then((db)=>{
     console.log("[mongodb] connected correctly to server");
     initSiteMap(filename, ()=>{
-        addInitPage(filename, ()=>{
-            addMetas(filename, ()=>{
-                addByMeta(filename, "genre", 0, 10, ()=>{
-                    addContents(filename, 0, 10, ()=>{
+       // addInitPage(filename, ()=>{
+       //     addMetas(filename, ()=>{
+       //         addByMeta(filename, "genre", 0, 10, ()=>{
+                    addContents(filename, 0, 5000, ()=>{
                         doneSiteMap(filename, ()=>{
                             console.log('done');
                             mongoose.connection.close();
                         });
                     });
-                });
-            });
-        });
+        //        });
+        //    });
+        //});
     });
 }, (err)=>{
     console.log("[mongodb] connection failed")
