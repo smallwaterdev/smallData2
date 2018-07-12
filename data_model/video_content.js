@@ -103,25 +103,7 @@ studio_name_convert["prestige-av"] = "prestige";
 
 const removed_char = '()';
 const aborted_char = '0123456789';
-// return []
-function washName(name){
-    //remove (), -,  number, split long name
-    //http://localhost:4200/pornstar/aika-mirei-ichikawa-tsubasa-hoshina-ai-ooto-wakaha-sazanami-rino-yuuri-maina
-    //http://localhost:4200/pornstar/haruka-ohsawa%EF%BC%8Cnana-kaisaki%EF%BC%8Cmayumi%EF%BC%8Criku-sena
-    //http://localhost:4200/pornstar/av-9898-shinoda-ayumi
-    let washed_chars = "";
-    for(let i of name){
-        if(removed_char.indexOf(i) !== -1){
-            
-        }else if(aborted_char.indexOf(i) !== -1){
-            //abort
-            return [];
-        }else{
-            washed_chars += i;
-        }
-    }
-    
-}
+
 const removed_names = [
     'jav-idol',
     'japanese-av-model'
@@ -165,6 +147,7 @@ const firstnames = [
     'yuuri',
     'ikumi'
 ];
+
 function firstname_lastname_converter(starname){
     let starname_ = starname.split('-');
     if(starname_.length === 2){
@@ -179,6 +162,12 @@ function firstname_lastname_converter(starname){
         return starname;
     }
 }
+/*module.exports.firstnames = firstnames;
+module.exports.lastnames = lastnames;
+module.exports.removed_names = removed_names;
+module.exports.aborted_char = aborted_char;
+module.exports.removed_char = removed_char;
+module.exports.firstname_lastname_converter = firstname_lastname_converter;*/
 
 class VideoContent{
     constructor(domain){
