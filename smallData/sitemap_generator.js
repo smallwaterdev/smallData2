@@ -17,7 +17,7 @@ function initSiteMap(filename, callback){
       xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">`, callback);
 }
 
-function addInitPage(filenmae, callback){
+function addInitPage(filename, callback){
     fs.appendFile(filename, `
     <url>
         <loc>${url_origin + '/'}</loc>
@@ -111,7 +111,49 @@ function addByMeta(filename, meta, from, limit, callback){
     });
 }
 
-
+function sitemap(callback){
+    let filename = "./seo/sitemap/sitemap.xml";
+    let text = `<?xml version="1.0" encoding="UTF-8"?>
+    <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_meta.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_meta_genre.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_meta_director.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_meta_starname.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_meta_studio.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+       <loc>${url_origin}/sitemap/sitemap_content_5000_1.xml</loc>
+       <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_content_5000_2.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_content_5000_3.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    <sitemap>
+        <loc>${url_origin}/sitemap/sitemap_content_5000_4.xml</loc>
+        <lastmod>2018-07-12</lastmod>
+    </sitemap>
+    </sitemapindex>`;
+    fs.writeFile(filename, text, callback);
+}
 /**
  * 1. meta
  * 2. starname 1.page
@@ -121,22 +163,64 @@ function addByMeta(filename, meta, from, limit, callback){
  * 6. content 5000
  * 7. content 5000
 */
-const filename = "./seo/sitemap/sitemap_content_5000_1.xml";
+
+function sitemap_content_5000_1(callback){
+    let filename = "./seo/sitemap/sitemap_content_5000_1.xml";
+    initSiteMap(filename, ()=>{
+        addContents(filename, 0, 5000, ()=>{
+            doneSiteMap(filename, callback);
+        });
+    });
+}
+function sitemap_content_5000_2(callback){
+    let filename = "./seo/sitemap/sitemap_content_5000_2.xml";
+    initSiteMap(filename, ()=>{
+        addContents(filename, 5000, 5000, ()=>{
+            doneSiteMap(filename, callback);
+        });
+    });
+}
+function sitemap_content_5000_3(callback){
+    let filename = "./seo/sitemap/sitemap_content_5000_3.xml";
+    initSiteMap(filename, ()=>{
+        addContents(filename, 10000, 5000, ()=>{
+            doneSiteMap(filename, callback);
+        });
+    });
+}
+function sitemap_content_5000_4(callback){
+    let filename = "./seo/sitemap/sitemap_content_5000_4.xml";
+    initSiteMap(filename, ()=>{
+        addContents(filename, 15000, 5000, ()=>{
+            doneSiteMap(filename, callback);
+        });
+    });
+}
+function sitemap_meta(callback){
+    let filename = "./seo/sitemap/sitemap_meta.xml";
+    initSiteMap(filename, ()=>{
+        addInitPage(filename, ()=>{
+            addMetas(filename, ()=>{
+                doneSiteMap(filename, callback);
+            });
+        });
+    });
+}
+// genre, starname, studio, director
+function sitemap_meta_sub(type, callback){
+    let filename = "./seo/sitemap/sitemap_meta_" + type +".xml";
+    initSiteMap(filename, ()=>{
+        addByMeta(filename, type, 0, 10000, ()=>{
+            doneSiteMap(filename, callback);
+        });
+    });
+}
+
 connect.then((db)=>{
     console.log("[mongodb] connected correctly to server");
-    initSiteMap(filename, ()=>{
-       // addInitPage(filename, ()=>{
-       //     addMetas(filename, ()=>{
-       //         addByMeta(filename, "genre", 0, 10, ()=>{
-                    addContents(filename, 0, 5000, ()=>{
-                        doneSiteMap(filename, ()=>{
-                            console.log('done');
-                            mongoose.connection.close();
-                        });
-                    });
-        //        });
-        //    });
-        //});
+    sitemap(()=>{
+        console.log('done');
+        mongoose.connection.close();
     });
 }, (err)=>{
     console.log("[mongodb] connection failed")
