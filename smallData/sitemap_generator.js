@@ -29,7 +29,20 @@ function doneSiteMap(filename, callback){
 </urlset>`, callback);
 }
 function __generateContentSiteMap(content){
-    let publication_date = content.releaseDate.toString().substring(0, 10);
+    let day = content.releaseDate.getDate();
+    let month =content.releaseDate.getMonth() + 1;
+    let year = content.releaseDate.getFullYear();
+    if(day < 10){
+        day = '0'+day;
+    }else{
+        day = day.toString();
+    }
+    if(month< 10){
+        month = '0' + month;
+    }else{
+        month = month.toString();
+    }
+    let publication_date = year + '-' + month + '-' + day;
     let basic = `
     <url> 
         <loc>${url_origin + '/content/' + content._id}</loc> 
