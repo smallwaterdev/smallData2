@@ -372,15 +372,25 @@ function __updateGenreOrStar(type, oldName, newName, callback){
                     __updateStarnameToContentDB(id, oldName, newName, __callback__);
                 }
             },(result)=>{
-                // modified starDB or GenreDB
+                // modified starDB or GenreDB, ** 
+                // err case : {name:"A", contentId: "123"} => {name:"B", contentid:"123"}, but
+                // {name:"B", contentid:'123'} already existed
                 if(result.success){
-                    modelDB.updateMany({name: oldName}, {name:newName}, {new:true}, (err, update_result)=>{
-                        if(err){
-                            callback({success: false, reasons:[err.message]});
-                        }else{
-                            callback({success: true, reasons:[], value:update_result});
-                        }
+                    modelDB.find({name:oldName}, (err, items)=>{
+                        scheduler(items, 5, (item, __callback__)=>{
+                            modelDB.findOne({name: newName, contentId: item.contentId}, (err ,result)=>{
+                                if(err){
+                                    __callback__(err);
+                                }else if(result){
+                                    __callback__(); // ignore because already existed;
+                                }else{
+                                    item.name = newName;
+                                    item.save(__callback__);
+                                }
+                            });
+                        },callback);
                     });
+                    
                 }else{
                     callback(result);
                 }

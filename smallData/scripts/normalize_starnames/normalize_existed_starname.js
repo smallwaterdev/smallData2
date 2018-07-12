@@ -7,6 +7,7 @@ const fs = require('fs');
 const metaDB = require('../../db_models/meta_db');
 const updateNewValueByOldValue = require('../../db_operations/normalize_db_ops').updateNewValueByOldValue;
 const name_converter = require('./name_converter').name_converter;
+
 /*const lastnames = [
     'abe','aizawa','aoi',
     'hatano','hoshina','hamasaki', 'honda',
@@ -129,23 +130,23 @@ starnameValidEvent.on('next', (i)=>{
         }else if(stars.length > 0){
             //console.log(`====== Current star ${i} ${stars[0].name} ======`);
             let name = starname_validate(stars[0].name);
-            if(name === null){
-                let new_name = name_converter[name];
-                if(new_name){
-                    updateNewValueByOldValue('starname', name,new_name, (result)=>{
-                        if(result.success){
-                            //console.log('Reverse name done');
-                            starnameValidEvent.emit('next', (i + 1));
-                        }else{
-                            console.log('Update name error');
-                            starnameValidEvent.emit('err', (new Error(result.reasons[0])));
-                        }
-                    });
-                }else{
-                    console.log('Invalid name: ' + stars[0].name);
-                    invalid_counter++;
-                    starnameValidEvent.emit('next', (i + 1));   
-                }
+            if(name === null && name_converter[stars[0].name]){
+                updateNewValueByOldValue('starname', stars[0].name,name_converter[stars[0].name], (result)=>{
+                    if(result.success){
+                        //console.log('Reverse name done');
+                        starnameValidEvent.emit('next', (i + 1));
+                    }else{
+                        console.log('Update (reverse) name error');
+                        starnameValidEvent.emit('err', (new Error(result.reasons[0])));
+                    }
+                });
+                
+            }else if(name === null){
+            
+                console.log('Invalid name: ' + stars[0].name);
+                invalid_counter++;
+                starnameValidEvent.emit('next', (i + 1));   
+            
             }else{
                 if(name.split('-').length === 1){
                     //console.log('Good name: ' + name);
