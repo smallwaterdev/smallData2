@@ -6,10 +6,8 @@ const mongodb_option = require('./config').mongodb_option;
 const mongoose = require('mongoose');
 
 const connect = mongoose.connect(mongodb_url, {});
-
-
-
-const filename = "sitemap.xml";
+//const filename = "sitemap.xml";
+const filename = "~/seo/sitemap/sitmap.xml";
 const url_origin = "http://www.javferry.com"
 function initSiteMap(filename, callback){
     fs.writeFile(filename, `<?xml version="1.0" encoding="UTF-8"?>
