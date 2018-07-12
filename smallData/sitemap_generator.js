@@ -218,9 +218,27 @@ function sitemap_meta_sub(type, callback){
 
 connect.then((db)=>{
     console.log("[mongodb] connected correctly to server");
-    sitemap_meta_sub('genre',()=>{
-        console.log('done');
-        mongoose.connection.close();
+    sitemap_meta(()=>{
+        sitemap_meta_sub('genre',()=>{
+            sitemap_meta_sub('starname',()=>{
+                sitemap_meta_sub('studio',()=>{
+                    sitemap_meta_sub('director',()=>{
+                        sitemap_content_5000_1(()=>{
+                            sitemap_content_5000_2(()=>{
+                                sitemap_content_5000_3(()=>{
+                                    sitemap_content_5000_4(()=>{
+                                        sitemap(()=>{
+                                            console.log('done');
+                                            mongoose.connection.close();
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 }, (err)=>{
     console.log("[mongodb] connection failed")
