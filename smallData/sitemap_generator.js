@@ -103,7 +103,7 @@ function addByMeta(filename, meta, from, limit, callback){
         for(let r of results){
             text+= `
     <url>
-        <loc>${url_origin + '/' + name_converter[meta] + '/' + r.name}</loc>
+        <loc>${url_origin}/${name_converter[meta]}/${_.escape(r.name)}</loc>
         <priority>0.80</priority>
     </url>`
         }
@@ -218,7 +218,7 @@ function sitemap_meta_sub(type, callback){
 
 connect.then((db)=>{
     console.log("[mongodb] connected correctly to server");
-    sitemap(()=>{
+    sitemap_meta_sub('genre',()=>{
         console.log('done');
         mongoose.connection.close();
     });

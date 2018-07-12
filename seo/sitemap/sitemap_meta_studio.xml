@@ -3,7 +3,7 @@
       xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" 
       xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
     <url>
-        <loc>http://www.javferry.com/studio/&ribbon</loc>
+        <loc>http://www.javferry.com/studio/&amp;ribbon</loc>
         <priority>0.80</priority>
     </url>
     <url>
@@ -271,7 +271,7 @@
         <priority>0.80</priority>
     </url>
     <url>
-        <loc>http://www.javferry.com/studio/black&black</loc>
+        <loc>http://www.javferry.com/studio/black&amp;black</loc>
         <priority>0.80</priority>
     </url>
     <url>
@@ -1035,7 +1035,7 @@
         <priority>0.80</priority>
     </url>
     <url>
-        <loc>http://www.javferry.com/studio/km-producewe'reshe-males</loc>
+        <loc>http://www.javferry.com/studio/km-producewe&#39;reshe-males</loc>
         <priority>0.80</priority>
     </url>
     <url>
@@ -1119,7 +1119,7 @@
         <priority>0.80</priority>
     </url>
     <url>
-        <loc>http://www.javferry.com/studio/m's-video-group</loc>
+        <loc>http://www.javferry.com/studio/m&#39;s-video-group</loc>
         <priority>0.80</priority>
     </url>
     <url>
@@ -1235,7 +1235,7 @@
         <priority>0.80</priority>
     </url>
     <url>
-        <loc>http://www.javferry.com/studio/mgirls'lab</loc>
+        <loc>http://www.javferry.com/studio/mgirls&#39;lab</loc>
         <priority>0.80</priority>
     </url>
     <url>
@@ -1811,7 +1811,7 @@
         <priority>0.80</priority>
     </url>
     <url>
-        <loc>http://www.javferry.com/studio/v&r-produce</loc>
+        <loc>http://www.javferry.com/studio/v&amp;r-produce</loc>
         <priority>0.80</priority>
     </url>
     <url>
@@ -1847,7 +1847,7 @@
         <priority>0.80</priority>
     </url>
     <url>
-        <loc>http://www.javferry.com/studio/we'reshe-males</loc>
+        <loc>http://www.javferry.com/studio/we&#39;reshe-males</loc>
         <priority>0.80</priority>
     </url>
     <url>
