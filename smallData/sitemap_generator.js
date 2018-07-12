@@ -48,9 +48,9 @@ function __generateContentSiteMap(content){
         <loc>${url_origin + '/content/' + content._id}</loc> 
         <video:video>
         <video:thumbnail_loc>${_.escape(content.imgSummaryUrl)}</video:thumbnail_loc>
-        <video:title>${content.title}</video:title>
+        <video:title>${_.escape(content.title)}</video:title>
         <video:player_loc allow_embed="yes" autoplay="ap=1">${content.videoUrl}</video:player_loc>
-        <video:description>${content.title}</video:description>
+        <video:description>${_.escape(content.title)}</video:description>
         <video:publication_date>${publication_date}</video:publication_date>`;
     if(content.duration > 0 && content.duration < 28800) {
         basic += `
