@@ -8,6 +8,7 @@ name_converter['eri--sasaki'] = 'eri-sasaki';
 name_converter['fujikawa-reina-(kuramochi-akane)'] = 'fujikawa-reina';
 name_converter['hasumi--kawaguchi'] = 'hasumi-kawaguchi'
 name_converter['hitomi-(hitomi-tanaka)'] = 'hitomi-tanaka';
+name_converter['(honoka-izawa)'] = 'honoka-izawa';
 name_converter['i-akiyoshi-kanon'] = 'akiyoshi-kanon';
 name_converter['i-haru-marin'] = 'haru-marin';
 name_converter['i-kitakami-momo'] = 'kitakami-momo';
