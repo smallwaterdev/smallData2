@@ -506,9 +506,11 @@ function queryMeta(field, value, from, limit, callback){
         metaDB.findOne({field: field, name:value},meta_selected_fields, (err, result)=>{
             if(err){
                 callback({success: false, reasons:[err.message]});
-            }else{
+            }else if(result){
                 __queryAProfileForQueryMeta(result, callback);
                 //callback({success: true, reasons:[], value: result});
+            }else{
+                callback({success: false, reasons:[`Meta not found`]});
             }
         });
     }
