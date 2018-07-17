@@ -312,7 +312,7 @@ function quickQueryContents(sort, from, limit, callback){
         if(err){
             callback({success:false, reasons:[err.message]});
         }else{
-            callback({success: true, reasons:[], value: contents});
+            __getStarProfiles({success: true, reasons:[], value: contents}, callback);
         }
     });
 }
@@ -440,7 +440,11 @@ function recommendContents(id, limit, callback){
                     }
                 }
             ],(err, result)=>{
-                callback({success: err_messages.length === 0, reasons: err_messages, value: results});
+                __getStarProfiles(
+                    {success: err_messages.length === 0, reasons: err_messages, value: results}, 
+                    callback
+                );
+                //callback({success: err_messages.length === 0, reasons: err_messages, value: results});
             });
         }
     });
