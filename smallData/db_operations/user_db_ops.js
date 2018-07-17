@@ -177,12 +177,16 @@ function __getStarProfiles(result, callback){
         scheduler(tasks, 10, (i, __callback__)=>{
             let star_profiles = {};
             scheduler(result.value[i].starnames, 3, (starname, __callback)=>{
-                profileDB.find({field:"starname", value: starname}, (err, value)=>{
-                    if(err || !value || (value && !value.profile_url)){
+                profileDB.findOne({field:"starname", value: starname}, (err, value)=>{
+                    
+                    if(err || !value){
                         star_profiles[starname] = "";
                         __callback();
-                    }else{
+                    }else if(value.profile_url){
                         star_profiles[starname] = value.profile_url;
+                        __callback();
+                    }else{
+                        star_profiles[starname] = "";
                         __callback();
                     }
                 });
