@@ -28,6 +28,9 @@ module.exports.returned_fields = returned_fields;
 //////////////////// user query function starts ////////////////////////
 ////////////////////////////////////////////////////////////////////////
 
+function __generate_array(num){
+    return Array.from(Array(num).keys())
+}
 /**
  * helper functions
  */
@@ -110,7 +113,7 @@ function __queryContentById(id, callback){
     contentDB.findById(id).select(returned_fields)
     .then((content)=>{
         if(content){
-            callback({success: true, reasons:[], value: [content]});
+            callback({success: true, reasons:[], value: [content.toObject()]});
         }else{
             callback({success: false, reasons:[], value: []});
         }
@@ -142,7 +145,7 @@ function __queryContentsByStarOrGenre(type, value, options, callback){
         }else{
             let value = [];
             contents.forEach(ele=>{
-                value.push(ele.contentId);
+                value.push(ele.contentId.toObject());
             });
             callback({success:true, reasons:[], value:value});
         }
@@ -158,11 +161,44 @@ function __queryContentsByOtherFields(field, value, options, callback){
         if(err){
             callback({success: false, reasons:[err.message]});
         }else{
+            for(let i = 0; i < contents.length; i++){
+                contents[i] = contents[i].toObject();
+            }
             callback({success: true, reasons:[], value: contents});
         }
     });
 }
-
+/**
+ * 
+ */
+function __getStarProfiles(result, callback){
+    if(result.success){
+        let tasks = __generate_array(result.value.length);
+        scheduler(tasks, 10, (i, __callback__)=>{
+            let star_profiles = {};
+            scheduler(result.value[i].starnames, 3, (starname, __callback)=>{
+                profileDB.find({field:"starname", value: starname}, (err, value)=>{
+                    if(err || !value || (value && !value.profile_url)){
+                        star_profiles[starname] = "";
+                        __callback();
+                    }else{
+                        star_profiles[starname] = value.profile_url;
+                        __callback();
+                    }
+                });
+            }, ()=>{
+                //console.log(result.value[i].starnames);
+                result.value[i].starnames = star_profiles;
+                //console.log(result.value[i].starnames);
+                __callback__();
+            }); 
+        }, ()=>{
+            callback(result);
+        });
+    }else{
+        callback(result);
+    }
+}
 
 /**
  * @param field A string
@@ -183,7 +219,9 @@ function queryContents(field, value, sort, from, limit, callback){
         case "id":{
             __queryContentById(
                 queryValue.value.value,
-                callback
+                (result)=>{
+                    __getStarProfiles(result, callback);
+                }
             );
         };break;
 
@@ -193,7 +231,9 @@ function queryContents(field, value, sort, from, limit, callback){
                 queryValue.value.field, 
                 queryValue.value.value,
                 queryValue.value.option, 
-                callback
+                (result)=>{
+                    __getStarProfiles(result, callback);
+                }
             );
         };break;
 
@@ -202,7 +242,9 @@ function queryContents(field, value, sort, from, limit, callback){
                 queryValue.value.field, 
                 queryValue.value.value,
                 queryValue.value.option, 
-                callback
+                (result)=>{
+                    __getStarProfiles(result, callback);
+                }
             );
         };break; 
     }
