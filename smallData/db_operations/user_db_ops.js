@@ -312,6 +312,9 @@ function quickQueryContents(sort, from, limit, callback){
         if(err){
             callback({success:false, reasons:[err.message]});
         }else{
+            for(let i = 0; i < contents.length; i++){
+                contents[i] = contents[i].toObject();
+            }
             __getStarProfiles({success: true, reasons:[], value: contents}, callback);
         }
     });
@@ -440,7 +443,11 @@ function recommendContents(id, limit, callback){
                     }
                 }
             ],(err, result)=>{
+                for(let i = 0; i < results.length; i++){
+                    results[i] = results[i].toObject();
+                }
                 __getStarProfiles(
+                    
                     {success: err_messages.length === 0, reasons: err_messages, value: results}, 
                     callback
                 );
