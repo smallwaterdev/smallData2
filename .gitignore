@@ -1,5 +1,5 @@
 nohup.out
 node_modules
-seo
+seo/sitemap/*.xml
 smallData/scripts/normalize_starnames/firstnames
 smallData/scripts/normalize_starnames/lastnames
