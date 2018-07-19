@@ -29,7 +29,9 @@ const updateRoute = require('./smallDate_routes/manage_routes/update_route');
 // profile
 const removeProfileRoute = require('./smallDate_routes/profile_routes/remove_profile_route');
 const updateProfileRoute = require('./smallDate_routes/profile_routes/update_profile_route');
-
+// buffer
+const bufferCreateRoute = require('./smallDate_routes/buffer_content_routes/create_route');
+const bufferRemoveRoute = require('./smallDate_routes/buffer_content_routes/delete_route');
 
 // normalize 
 const normalizeRemoveRouter = require('./smallDate_routes/normalize_routes/normalize_removing_route');
@@ -109,6 +111,9 @@ manage_app.use(url_prefix + '/manage/query-meta', querymetaRoute);
 manage_app.use(url_prefix + '/manage/create', createRoute);
 manage_app.use(url_prefix + '/manage/update', updateRoute);
 manage_app.use(url_prefix + '/manage/remove', deleteRoute);
+
+manage_app.use(url_prefix + '/buffer/create', bufferCreateRoute);
+manage_app.use(url_prefix + '/buffer/remove', bufferRemoveRoute);
 
 manage_app.use(url_prefix + '/profile/update', updateProfileRoute);
 manage_app.use(url_prefix + '/profile/remove', removeProfileRoute);

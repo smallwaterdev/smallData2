@@ -141,7 +141,7 @@ function __queryContentsByStarOrGenre(type, value, options, callback){
     let query = modelDB.find({name: value}, null, options).populate({path: 'contentId', select: returned_fields});
     query.exec((err, contents)=>{
         if(err){
-            callback({success: true, reasons:[err.message]});
+            callback({success: false, reasons:[err.message]});
         }else{
             let value = [];
             contents.forEach(ele=>{

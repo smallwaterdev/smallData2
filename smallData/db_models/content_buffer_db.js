@@ -26,11 +26,7 @@ const VideoUrl = new Schema({
  * db.contents.createIndex({favorite:-1})
  * db.contents.createIndex({releaseDate:-1})
  */
-const content = new Schema({
-    _id:{
-        type: mongoose.Schema.Types.ObjectId,
-        required: true,
-    },
+const contentBuffer = new Schema({
     domain: { // javfinder.is
         type:String,
         required: true
@@ -117,11 +113,11 @@ const content = new Schema({
     usePushEach:true
 });
 
-content.index({view:-1});
-content.index({duration:-1});
-content.index({rating:-1});
-content.index({favorite:-1});
-content.index({releaseDate:-1});
+/*contentBuffer.index({view:-1});
+contentBuffer.index({duration:-1});
+contentBuffer.index({rating:-1});
+contentBuffer.index({favorite:-1});
+contentBuffer.index({releaseDate:-1});*/
 
-const Contents = mongoose.model("content", content); // Dish => Dishes automatically.
-module.exports = Contents;
+const ContentBuffers = mongoose.model("contentbuffer", contentBuffer); // Dish => Dishes automatically.
+module.exports = ContentBuffers;
