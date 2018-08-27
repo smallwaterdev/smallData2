@@ -130,7 +130,8 @@ function verifyOption(option){
  * Having a content, manually populate its star profile and genre and studio profile
  */
 function queryStarnames(starname, option, callback){
-    starDB.find({name: starname}, null, option, (err, starsContents)=>{
+    let query = starDB.find({name: starname}, null, option).populate({path:'contentId', select: returned_fields});
+    query.exec((err, starsContents)=>{
         if(err){
             callback({success: false, reasons:[err.message]});
         }else{
