@@ -124,39 +124,72 @@ function verifyOption(option){
 /**
  * Having a content, manually populate its star profile and genre and studio profile
  */
-function queryContents(condition, option, callback){
-    contentDB.find(
-        verifyCondition(condition), 
-        returned_fields, 
-        verifyOption(option), 
-        (err, contents)=>{
-            if(err){
-                callback({success: false, reasons:[err.message]});
-            }else if(contents.length > 0){
-                let task_number_arr = new Array(contents.length);
-                let finalConents = [];
-                for(let i = 0; i < contents.length; i++){
-                    task_number_arr[i] = i;
-                }
-                scheduler(task_number_arr, 5, (no, __callback)=>{
-                    let content = contents[no].toObject();
-                    attachStarProfiles(content, (fC)=>{
-                        if(fC.success){
-                            finalConents[no] = fC.value;
-                        }else{
-                            content.starnames = {};
-                            finalConents[no] = content;
-                        }
-                        __callback({success: true, reasons:[]});
-                    });
-                }, (result)=>{
-                    callback({success: true, reasons:[], value: finalConents});
-                });
-            }else{
-                callback({success: true, reasons:[], value:[]});
+function queryStarnames(starname, option, callback){
+    starDB.find({name: starname}, null, option, (err, starsContents)=>{
+        if(err){
+            callback({success: false, reasons:[err.message]});
+        }else{
+            let contents = [];
+            for(let i =0; i < starsContents.length; i++){
+                contents.push(starsContents[i].contentId);
             }
+            attachStarProfileToContents(contents, callback);
         }
-    );
+    });
+}
+function queryGenres(genre, option, callback){
+    genreDB.find({name: genre}, null, option, (err, genreContents)=>{
+        if(err){
+            callback({success: false, reasons:[err.message]});
+        }else{
+            let contents = [];
+            for(let i =0; i < genreContents.length; i++){
+                contents.push(genreContents[i].contentId);
+            }
+            attachStarProfileToContents(contents, callback);
+        }
+    });
+}
+function queryContents(condition, option, callback){
+    let validOption = verifyOption(option);
+    if(condition.starname){
+        queryStarnames(condition.starname, optivalidOptionon, callback);
+    }else if(condition.genre){
+        queryGenres(condition.genre, optivalidOptionon, callback);
+    }else{
+        contentDB.find(
+            verifyCondition(condition), 
+            returned_fields, 
+            validOption, 
+            (err, contents)=>{
+                if(err){
+                    callback({success: false, reasons:[err.message]});
+                }else if(contents.length > 0){
+                    let task_number_arr = new Array(contents.length);
+                    let finalConents = [];
+                    for(let i = 0; i < contents.length; i++){
+                        task_number_arr[i] = i;
+                    }
+                    scheduler(task_number_arr, 5, (no, __callback)=>{
+                        let content = contents[no].toObject();
+                        attachStarProfiles(content, (fC)=>{
+                            if(fC.success){
+                                finalConents[no] = fC.value;
+                            }else{
+                                content.starnames = {};
+                                finalConents[no] = content;
+                            }
+                            __callback({success: true, reasons:[]});
+                        });
+                    }, (result)=>{
+                        callback({success: true, reasons:[], value: finalConents});
+                    });
+                }else{
+                    callback({success: true, reasons:[], value:[]});
+                }
+            }
+        );
+    }
 }
 ////////////////////////////////////////////////////////////////
 //////////////////// query contents ends ///////////////////////
