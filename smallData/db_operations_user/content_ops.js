@@ -55,7 +55,12 @@ function attachStarProfileToContents(contents, callback){
         task_arr[i] = i;
     }
     scheduler(task_arr, 3, (i, __callback)=>{
-        let cont = contents[i].toObject();
+        let cont;
+        try{
+            cont = contents[i].toObject();
+        }catch(err){
+            cont = contents[i];
+        }
         attachStarProfiles(cont, (fC)=>{
             if(fC.success){
                 recommendContents[i] = fC.value;
