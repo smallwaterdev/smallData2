@@ -85,8 +85,13 @@ function __pushIntoIndexDB(word, id, callback){
             if(item.contentids.indexOf(id) === -1){
                 item.contentids.push(id);
                 item.counter = item.counter + 1;
-                __callback = callback;
-                item.save(__generalHandler);
+                item.save((err, res)=>{
+                    if(err){
+                        callback({success: false, reasons:[err.message]});
+                    }else{
+                        callback({success: true, reasons:[], value: res});
+                    }
+                });
             }else{
                 // already exist.
                 // it is due to re-push a word, or the word appear in a title more than once.
@@ -95,7 +100,13 @@ function __pushIntoIndexDB(word, id, callback){
         }else{
             // create a new
             __callback = callback;
-            reverseIndexDB.create({keyword: word, contentids:[id]}, __generalHandler);
+            reverseIndexDB.create({keyword: word, contentids:[id]}, (err, res)=>{
+                if(err){
+                    callback({success: false, reasons:[err.message]});
+                }else{
+                    callback({success: true, reasons:[], value: res});
+                }
+            });
         }
     });
 }
