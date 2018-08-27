@@ -3,21 +3,21 @@
 */
 const contentDB = require('../db_models/content_db');
 const reverseIndexDB = require('../db_models/reverse_index_db');
-const scheduler = require('./helper_functions').scheduler;
-const string2NonNegative = require('./helper_functions').string2NonNegative;
-
+const scheduler = require('../db_operations/helper_functions').scheduler;
+const string2NonNegative = require('../db_operations/helper_functions').string2NonNegative;
+const returned_fields = require('./content_ops').returned_fields;
+const attachStarProfiles = require('./content_ops').attachStarProfiles;
 const MAX_RETURN_ITEM = 40;
 const DEFAULT_RETURN_ITEM = 20;
 
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// helper functions starts /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
 const frequencyWords = [
     'the', 'a', 'an', 'he', 'she', 'is', 'are', 'they', 'it', 'i', 'am',
     'and', 'sex', 'jav', 'who', 'with', 'that', 'you', 'for', 'can'
     // wife , sex 2000+
 ];
-
+/**
+ * helper
+*/
 function normalizeTitle(title){
     // remove (), [], 
     const ignore = ['(', ')', '[', ']', '*', '@', '!'];
@@ -48,8 +48,7 @@ function normalizeTitle(title){
     }while(s_p !== -1);
     return result.toLocaleLowerCase();
 }
-
-// input is an lower case words array
+// input is an lower case words
 function filterWords(word_arr){
     let results  =[];
     let num = word_arr.length;
@@ -64,125 +63,7 @@ function filterWords(word_arr){
     }
     return results;
 }
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// helper functions starts /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// create functions starts /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * 1. word can be any language, but not "" or " ".
- * 2. id must be a valid content id.
-*/
-function __pushIntoIndexDB(word, id, callback){
-    reverseIndexDB.findOne({keyword:word}, (err, item)=>{
-        if(err){
-            callback({success: false, reasons:[err.message]});
-        }else if(item){
-            // update a item
-            if(item.contentids.indexOf(id) === -1){
-                item.contentids.push(id);
-                item.counter = item.counter + 1;
-                __callback = callback;
-                item.save(__generalHandler);
-            }else{
-                // already exist.
-                // it is due to re-push a word, or the word appear in a title more than once.
-                callback({success: true, reasons:[]});
-            }
-        }else{
-            // create a new
-            __callback = callback;
-            reverseIndexDB.create({keyword: word, contentids:[id]}, __generalHandler);
-        }
-    });
-}
-function __pushTitle(title, id, callback){
-    let title_words = filterWords(normalizeTitle(title).split(' '));
-    let num = title_words.length;
-    scheduler(title_words, 1, (title_word, __callback__)=>{
-        __pushIntoIndexDB(title_word, id, __callback__);
-    }, callback);
-}
-
-/**
- * if id's content return true.
- * @param callback ({success: boolean, reasons:[string], value: })
-*/
-function indexContent(id, callback){
-    contentDB.findById(id, (err, content)=>{
-        if(err){
-            callback({success: false, reasons:[err.message]});
-        }else if(content && content.title){
-            __pushTitle(content.title, id, (result)=>{
-                if(result.success){
-                    content.status = 89;
-                    content.save((err, res)=>{
-                        if(err){
-                            callback({success: false, reasons:[err.message]});
-                        }else{
-                            callback({success: true, reasons:[], value: res});
-                        }
-                    });
-                }else{
-                    callback(result);
-                }
-            });
-        }else{
-            callback({success: true, reasons:[]});
-        }
-    });
-}
-
-function indexContents(condition, option, callback){
-    contentDB.find(condition, null, option, (err, contents)=>{
-        if(err){
-            callback({success: false, reasons:[err.message]});
-        }else{
-            scheduler(contents, 1, (content, __callback)=>{
-                if(content.title){
-                    __pushTitle(content.title, content._id, (result)=>{
-                        if(result.success){
-                            content.status = 89;
-                            content.save((err, res)=>{
-                                if(err){
-                                    __callback({success: false, reasons:[err.message]});
-                                }else{
-                                    __callback({success: true, reasons:[], value: res});
-                                }
-                            });
-                        }else{
-                            __callback(result);
-                        }
-                    });
-                }else{
-                    __callback({success: true, reasons:[]});
-                }
-            }, callback);
-        }
-    });
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// create functions ends ///////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// delete functions starts /////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// delete functions ends ///////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////// query (search) functions starts /////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
 
 function __verifySearchCriteria(title, from ,limit){
 
@@ -196,6 +77,8 @@ function __verifySearchCriteria(title, from ,limit){
         }
         if(limit_n === -1){
             limit_n = DEFAULT_RETURN_ITEM;
+        }else if(limit_n > MAX_RETURN_ITEM){
+            limit_n = MAX_RETURN_ITEM;
         }
         return {
             title : title,
@@ -220,6 +103,7 @@ function __weight(order, word_counter, title_length){
 }
 
 function search(title, from, limit, callback){
+    console.log(title, from, limit);
     let option = __verifySearchCriteria(title, from ,limit);
     if(option){
         let title_words = filterWords(normalizeTitle(title).split(' '));
@@ -272,12 +156,22 @@ function search(title, from, limit, callback){
             }
             /////// obtain contents from ids /////////
             let contents = [];
-            scheduler(ids, 20, (id, __callback)=>{
+            scheduler(ids, 10, (id, __callback)=>{
                 contentDB.findById(id.id, null, (err, content)=>{
                     if(err){
                         __callback({success: false, reasons:[err.message]});
+                    }else if(content){
+                        let oC = content.toObject();
+                        attachStarProfiles(oC, (soC)=>{
+                            if(soC.success){
+                                contents[id.no] = soC.value;
+                            }else{
+                                oC.starnames = {};
+                                contents[id.no] = oC;
+                            }
+                            __callback({success: true, reasons:[]});
+                        });
                     }else{
-                        contents[id.no] = content;
                         __callback({success: true, reasons:[]});
                     }
                 });
@@ -296,6 +190,4 @@ function search(title, from, limit, callback){
 ///////////////////////////////// query (search) starts /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
 
-module.exports.indexContent = indexContent;
-module.exports.indexContents = indexContents;
 module.exports.search = search;

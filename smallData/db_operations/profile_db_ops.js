@@ -11,7 +11,7 @@ function __generalHandler(err, result){
     }
 }
 
-function updateProfileImage(field, value, url, callback){
+function refreshProfileImage(field, value, url, callback){
     if(typeof field !== 'string' || typeof value !== 'string' || typeof url !== 'string'){
         callback({success: false, reasons:["Invalid inputs"]});
     }else{
@@ -29,7 +29,7 @@ function updateProfileImage(field, value, url, callback){
         });
     }
 }
-function updateProfileIntro(field, value, intro, callback){
+function refreshProfileIntro(field, value, intro, callback){
     if(typeof field !== 'string' || typeof value !== 'string' || typeof intro !== 'string'){
         callback({success: false, reasons:["Invalid inputs"]});
     }else{
@@ -47,17 +47,39 @@ function updateProfileIntro(field, value, intro, callback){
         });
     }
 }
-function removeProfile(field, value, callback){
-    if(typeof field !== 'string' || typeof value !== 'string'){
+function deleteProfile(field, value, callback){
+    if(typeof field !== 'string'){
         callback({success: false, reasons:["Invalid inputs"]});
+    }else if(value){
+        profileDB.findOneAndRemove({field: field, value: value}, (err, response)=>{
+            if(err){
+                callback({success: false, reasons:[err.message], value: null});
+            }else{
+                callback({success: true, reasons:[], value: response});
+            }
+        });
     }else{
-        __callback = callback;
-        profileDB.findOneAndRemove({field: field, value: value}, __generalHandler);
+        profileDB.remove({field: field}, (err, response)=>{
+            if(err){
+                callback({success: false, reasons:[err.message], value: null});
+            }else{
+                callback({success: true, reasons:[], value: response});
+            }
+        });
     }
     
 }
+function queryProfile(field, value, callback){
+    profileDB.findOne({field: field, value: value}, (err, response)=>{
+        if(err){
+            callback({success: false, reasons:[err.message], value: null});
+        }else{
+            callback({success: true, reasons:[], value: response});
+        }
+    });
+}
 
-
-module.exports.updateProfileImage = updateProfileImage;
-module.exports.updateProfileIntro = updateProfileIntro;
-module.exports.removeProfile = removeProfile;
+module.exports.refreshProfileImage = refreshProfileImage;
+module.exports.refreshProfileIntro = refreshProfileIntro;
+module.exports.deleteProfile = deleteProfile;
+module.exports.queryProfile = queryProfile;

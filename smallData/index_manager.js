@@ -21,32 +21,33 @@ const smallData_store_port = require('./config').smallData_store_port;
 const smallData_secure_store_port = require('./config').smallData_secure_store_port;
 
 // manager
-const queryRoute = require('./smallDate_routes/manage_routes/query_route');
-const querymetaRoute = require('./smallDate_routes/manage_routes/querymeta_route');
-const deleteRoute = require('./smallDate_routes/manage_routes/delete_route');
-const createRoute = require('./smallDate_routes/manage_routes/create_route');
-const updateRoute = require('./smallDate_routes/manage_routes/update_route');
+const queryContentRoute = require('./manager_routes/content_routes/query_route');
+const deleteContentRoute = require('./manager_routes/content_routes/delete_route');
+const createContentRoute = require('./manager_routes/content_routes/create_route');
+const updateContentRoute = require('./manager_routes/content_routes/update_route');
+const updateContentDirectorRoute = require('./manager_routes/content_routes/update_director_route');
+const updateContentStudioRoute = require('./manager_routes/content_routes/update_studio_route');
+const deleteContentDirectorRoute = require('./manager_routes/content_routes/delete_director_route');
+const deleteContentStudioRoute = require('./manager_routes/content_routes/delete_studio_route');
+// starname
+const queryStarnameRoute = require('./manager_routes/starname_routes/query_route');
+const deleteStarnameRoute = require('./manager_routes/starname_routes/delete_route');
+const updateStarnameRoute = require('./manager_routes/starname_routes/update_route');
+// genre
+const queryGenreRoute = require('./manager_routes/genre_routes/query_route');
+const deleteGenreRoute = require('./manager_routes/genre_routes/delete_route');
+const updateGenreRoute = require('./manager_routes/genre_routes/update_route');
+// meta
+const queryMetaRoute = require('./manager_routes/meta_routes/query_route');
+const deleteMetaRoute = require('./manager_routes/meta_routes/delete_route');
+const refreshMetaRoute = require('./manager_routes/meta_routes/refresh_route');
 // profile
-const removeProfileRoute = require('./smallDate_routes/profile_routes/remove_profile_route');
-const updateProfileRoute = require('./smallDate_routes/profile_routes/update_profile_route');
-// buffer
-const bufferCreateRoute = require('./smallDate_routes/buffer_content_routes/create_route');
-const bufferRemoveRoute = require('./smallDate_routes/buffer_content_routes/delete_route');
-
-// normalize 
-const normalizeRemoveRouter = require('./smallDate_routes/normalize_routes/normalize_removing_route');
-const normalizeUpdateRouter = require('./smallDate_routes/normalize_routes/normalize_updating_route');
-// meta cache
-const metaCacheUpdateRoute = require('./smallDate_routes/metacache_routes/updatemeta_route');
-const metaCacheRemoveRoute = require('./smallDate_routes/metacache_routes/removemeta_route');
-const metaCacheALLRoute = require('./smallDate_routes/metacache_routes/allmeta_route');
-
-// reverse index route
-const reverseIndexCreateRoute = require('./smallDate_routes/reverse_index_routes/create_route');
-const reverseIndexRemoveRoute = require('./smallDate_routes/reverse_index_routes/delete_route');
-const reverseIndexCheckCountRoute = require('./smallDate_routes/reverse_index_routes/check_count_route');
-// for chrome extension
-const javseenRoute = require('./smallDate_routes/javseen_decrypt');
+const queryProfileRoute = require('./manager_routes/profile_routes/query_route');
+const deleteProfileRoute = require('./manager_routes/profile_routes/delete_route');
+const refreshProfileRoute = require('./manager_routes/profile_routes/refresh_route');
+// reverse index
+const createReverseIndexRoute = require('./manager_routes/reverse_index_routes/create_route');
+const searchReverseIndexRouter = require('./manager_routes/reverse_index_routes/query_route');
 
 
 const mongodb_url = require('./config').mongodb_url;
@@ -86,7 +87,7 @@ connect.then((db)=>{
 });*/
 
 // no auth is needed 
-manage_app.use('/openload/decrypt', javseenRoute);
+// manage_app.use('/openload/decrypt', javseenRoute);
 
 // sample authenticate
 function manage_authentication(req, res, next){
@@ -105,31 +106,37 @@ manage_app.post('*', manage_authentication);
 manage_app.put('*', manage_authentication);
 manage_app.delete('*', manage_authentication);
 const url_prefix = "/manager/api";
-// manage.all('*', cors());
-manage_app.use(url_prefix + '/manage/query', queryRoute);
-manage_app.use(url_prefix + '/manage/query-meta', querymetaRoute);
-manage_app.use(url_prefix + '/manage/create', createRoute);
-manage_app.use(url_prefix + '/manage/update', updateRoute);
-manage_app.use(url_prefix + '/manage/remove', deleteRoute);
 
-manage_app.use(url_prefix + '/buffer/create', bufferCreateRoute);
-manage_app.use(url_prefix + '/buffer/remove', bufferRemoveRoute);
+// contents
+manage_app.use(url_prefix + '/content/query', queryContentRoute);
+manage_app.use(url_prefix + '/content/create', createContentRoute);
+manage_app.use(url_prefix + '/content/update', updateContentRoute);
+manage_app.use(url_prefix + '/content/delete', deleteContentRoute);
+manage_app.use(url_prefix + '/contents/delete/director', deleteContentDirectorRoute);
+manage_app.use(url_prefix + '/contents/delete/studio', deleteContentStudioRoute);
+manage_app.use(url_prefix + '/contents/update/director', updateContentDirectorRoute);
+manage_app.use(url_prefix + '/contents/update/studio', updateContentStudioRoute);
+// stars
+manage_app.use(url_prefix + '/starname/query', queryStarnameRoute);
+manage_app.use(url_prefix + '/starname/update', updateStarnameRoute);
+manage_app.use(url_prefix + '/starname/delete', deleteStarnameRoute);
+// genres
+manage_app.use(url_prefix + '/genre/query', queryGenreRoute);
+manage_app.use(url_prefix + '/genre/update', updateGenreRoute);
+manage_app.use(url_prefix + '/genre/delete', deleteGenreRoute);
+// meta
+manage_app.use(url_prefix + '/meta/query', queryMetaRoute);
+manage_app.use(url_prefix + '/meta/refresh', refreshMetaRoute);
+manage_app.use(url_prefix + '/meta/delete', deleteMetaRoute);
+// profile
+manage_app.use(url_prefix + '/profile/query', queryProfileRoute);
+manage_app.use(url_prefix + '/profile/refresh', refreshProfileRoute);
+manage_app.use(url_prefix + '/profile/delete', deleteProfileRoute);
+// reverseindex
+manage_app.use(url_prefix + '/reverseindex/create', createReverseIndexRoute);
+manage_app.use(url_prefix + '/reverseindex/search', searchReverseIndexRouter);
 
-manage_app.use(url_prefix + '/profile/update', updateProfileRoute);
-manage_app.use(url_prefix + '/profile/remove', removeProfileRoute);
 
-
-manage_app.use(url_prefix + '/metacache/update', metaCacheUpdateRoute);
-manage_app.use(url_prefix + '/metacache/all', metaCacheALLRoute);
-manage_app.use(url_prefix + '/metacache/remove', metaCacheRemoveRoute);
-
-manage_app.use(url_prefix + '/normalize/remove', normalizeRemoveRouter);
-manage_app.use(url_prefix + '/normalize/update', normalizeUpdateRouter);
-
-manage_app.use(url_prefix + '/reverseindex/create', reverseIndexCreateRoute);
-manage_app.use(url_prefix + '/reverseindex/remove', reverseIndexRemoveRoute);
-manage_app.use(url_prefix + '/reverseindex/checkcount', reverseIndexCheckCountRoute);
-//manage_app.use('/normalize', normalizeRoute);
 //////////// error ////////////////
 // catch 404 and forward to error handler
 manage_app.use(function(req, res, next) {

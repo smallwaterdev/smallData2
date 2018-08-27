@@ -12,19 +12,23 @@ const smallData_ip = require('./config').smallData_ip;
 const smallData_user_port = require('./config').smallData_user_port;
 const mongodb_url = require('./config').mongodb_url;
 
-const user_query_route = require('./smallDate_routes/user_routes/query_route');
-const user_query_meta_route = require('./smallDate_routes/user_routes/querymeta_route');
-const user_quick_query_route = require('./smallDate_routes/user_routes/quickquery_route');
-const user_recommended_route = require('./smallDate_routes/user_routes/recommend_route');
-const user_search_route = require('./smallDate_routes/user_routes/search_route');
-const user_query_profile_route = require('./smallDate_routes/user_routes/query_profile_route');
+// content
+const queryContentRoute = require('./user_routes/content_routes/query_route');
+const queryRecommendContentRoute = require('./user_routes/content_routes/recommend_route');
+const searchContentRoute = require('./user_routes/content_routes/search_route');
+// meta
+const queryMetaRoute = require('./user_routes/meta_routes/query_route');
+
 ///////// Express configuration //////////
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 
 user_app.use(logger('dev'));
 user_app.use(bodyParser.json());
-
+user_app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    limit: '50mb',
+    extended: true
+}));
 ///////// Database configurations //////////
 const mongoose = require('mongoose');
 const bluebird = require('bluebird');
@@ -42,12 +46,12 @@ connect.then((db)=>{
 });
 
 
-user_app.use(url_prefix + '/query', user_query_route);
-user_app.use(url_prefix + '/querymeta', user_query_meta_route);
-user_app.use(url_prefix + '/quickquery', user_quick_query_route);
-user_app.use(url_prefix + '/queryprofile', user_query_profile_route);
-user_app.use(url_prefix + '/recommendlist', user_recommended_route)
-user_app.use(url_prefix + '/search',user_search_route );
+user_app.use(url_prefix + '/content/query', queryContentRoute);
+user_app.use(url_prefix + '/content/recommend', queryRecommendContentRoute);
+user_app.use(url_prefix + '/content/search', searchContentRoute);
+
+user_app.use(url_prefix + '/meta/query', queryMetaRoute);
+
 user_app.use(function(req, res, next) {
     next(createError(404));
 });
@@ -57,8 +61,6 @@ user_app.use(function(req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
-  
-    // render the error page
     res.status(err.status || 500);
     res.end(err.message);
 });
