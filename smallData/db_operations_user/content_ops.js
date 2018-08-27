@@ -153,9 +153,9 @@ function queryGenres(genre, option, callback){
 function queryContents(condition, option, callback){
     let validOption = verifyOption(option);
     if(condition.starname){
-        queryStarnames(condition.starname, optivalidOptionon, callback);
+        queryStarnames(condition.starname, validOption, callback);
     }else if(condition.genre){
-        queryGenres(condition.genre, optivalidOptionon, callback);
+        queryGenres(condition.genre, validOption, callback);
     }else{
         contentDB.find(
             verifyCondition(condition), 
