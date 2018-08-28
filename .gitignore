@@ -3,3 +3,4 @@ node_modules
 seo/sitemap/*.xml
 smallData/scripts/normalize_starnames/firstnames
 smallData/scripts/normalize_starnames/lastnames
+*.log
