@@ -99,7 +99,6 @@ function __pushIntoIndexDB(word, id, callback){
             }
         }else{
             // create a new
-            __callback = callback;
             reverseIndexDB.create({keyword: word, contentids:[id]}, (err, res)=>{
                 if(err){
                     callback({success: false, reasons:[err.message]});

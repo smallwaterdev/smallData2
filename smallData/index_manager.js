@@ -48,7 +48,8 @@ const refreshProfileRoute = require('./manager_routes/profile_routes/refresh_rou
 // reverse index
 const createReverseIndexRoute = require('./manager_routes/reverse_index_routes/create_route');
 const searchReverseIndexRouter = require('./manager_routes/reverse_index_routes/query_route');
-
+// seo
+const createSitemapRoute = require('./manager_routes/seo_routes/create_route');
 
 const mongodb_url = require('./config').mongodb_url;
 const mongodb_option = require('./config').mongodb_option;
@@ -135,7 +136,8 @@ manage_app.use(url_prefix + '/profile/delete', deleteProfileRoute);
 // reverseindex
 manage_app.use(url_prefix + '/reverseindex/create', createReverseIndexRoute);
 manage_app.use(url_prefix + '/reverseindex/search', searchReverseIndexRouter);
-
+// seo
+manage_app.use(url_prefix + '/seo/create', createSitemapRoute);
 
 //////////// error ////////////////
 // catch 404 and forward to error handler
