@@ -50,6 +50,7 @@ const createReverseIndexRoute = require('./manager_routes/reverse_index_routes/c
 const searchReverseIndexRouter = require('./manager_routes/reverse_index_routes/query_route');
 // seo
 const createSitemapRoute = require('./manager_routes/seo_routes/create_route');
+const deleteSitemapRoute = require('./manager_routes/seo_routes/delete_route');
 
 const mongodb_url = require('./config').mongodb_url;
 const mongodb_option = require('./config').mongodb_option;
@@ -138,6 +139,7 @@ manage_app.use(url_prefix + '/reverseindex/create', createReverseIndexRoute);
 manage_app.use(url_prefix + '/reverseindex/search', searchReverseIndexRouter);
 // seo
 manage_app.use(url_prefix + '/seo/create', createSitemapRoute);
+manage_app.use(url_prefix + '/seo/delete', deleteSitemapRoute);
 
 //////////// error ////////////////
 // catch 404 and forward to error handler
