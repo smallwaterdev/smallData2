@@ -327,9 +327,10 @@ function recommendContents(id, limit, callback){
                 let counter = 0;
                 for(let i = 0; i < recommendContents.length; i++){
                     if(counter < limit_n){
-                        if(idList.indexOf(recommendContents[i]._id) === -1){
+                        let id_ = recommendContents[i]._id.toString();
+                        if(idList.indexOf(id_) === -1){
                             contentList.push(recommendContents[i]);
-                            idList.push(recommendContents[i]._id);
+                            idList.push(id_);
                             counter++;
                         }
                     }
