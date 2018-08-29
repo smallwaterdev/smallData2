@@ -137,6 +137,7 @@ function search(title, from, limit, callback){
         },
         (result)=>{
             ////// sort ids by weigth ///////
+            let length = resultIds.size;
             resultIds[Symbol.iterator] = function* () {
                 yield* [...this.entries()].sort((a, b) => b[1] - a[1]);
             }
