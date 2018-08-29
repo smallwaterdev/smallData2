@@ -144,7 +144,7 @@ function queryStarnames(starname, option, callback){
     });
 }
 function queryGenres(genre, option, callback){
-    let query = starDB.find({name: genre}, null, option).populate({path:'contentId', select: returned_fields});
+    let query = genreDB.find({name: genre}, null, option).populate({path:'contentId', select: returned_fields});
     query.exec((err, genreContents)=>{
         if(err){
             callback({success: false, reasons:[err.message]});
