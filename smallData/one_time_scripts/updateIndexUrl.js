@@ -4,6 +4,9 @@ const contentDB = require('../db_models/content_db');
 const disconnectDB = require('./helper_function').disconnectDB;
 const scheduler = require('../db_operations/helper_functions').scheduler;
 function updateJavfinderIndexUrl(url){
+    if(typeof url !== 'string'){
+        return null;
+    }
     let segments = url.split('/');
     if(segments.length !== 5){
         console.log('javfinder.is', url);
@@ -14,6 +17,9 @@ function updateJavfinderIndexUrl(url){
 }
 //http://javseen.com/kept-are-in-happy-transformation-anal-pet-maria-wakatsuki/
 function updateJavseenIndexUrl(url){
+    if(typeof url !== 'string'){
+        return null;
+    }
     let segments = url.split('/');
     if(segments.length != 5){
         console.log('javseen.com',url);

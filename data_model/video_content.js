@@ -321,14 +321,20 @@ class VideoContent{
         }
     }
     addStarname(starname){
-        if(this.data.starnames){
+        /*if(this.data.starnames){
             this.data.starnames.push(normalizeName(starname));
         }else{
             this.data.starnames = [normalizeName(starname)];
+        }*/
+        if(this.data.starnames){
+            this.data.starnames.push(starname);
+        }else{
+            this.data.starnames = [starname];
         }
     }
     getStarnames(){
-        if(this.data.starnames){
+        return this.data.starnames;
+        /*if(this.data.starnames){
             let i = 0; 
             let result = [];
             while(i < this.data.starnames.length){
@@ -346,7 +352,7 @@ class VideoContent{
         }else{
             this.data.starnames = [];
             return this.data.starnames;
-        }
+        }*/
     }
     setStudio(value){
         this.data.studio = normalizeName(value);
