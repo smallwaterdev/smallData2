@@ -14,6 +14,9 @@ const mongodb_auth = {
 }
 
 const manage_token = "store_password";
+const cookie_key = "12n23ug3284y2nrui3";
+const session_key = cookie_key;
+const session_id = "sessionid";
 module.exports.smallData_ip = smallData_ip;
 module.exports.smallData_user_port = smallData_user_port;
 module.exports.smallData_store_port = smallData_store_port;
@@ -24,3 +27,6 @@ module.exports.smallData_secure_store_certificate_path = smallData_secure_store_
 
 module.exports.mongodb_url = mongodb_url;
 module.exports.manage_token = manage_token;
+module.exports.cookie_key = cookie_key;
+module.exports.session_key = session_key;
+module.exports.session_id = session_id;
