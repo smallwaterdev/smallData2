@@ -91,7 +91,7 @@ function signup(req, res, callback){
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log(`${username}`);
     console.log(`${email}`);
-    console.log(`${passport}`);
+    console.log(`${password}`);
     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     userDB.register(new userDB({ username : username, email: email }), password, function(err, account) {
         if (err) {
