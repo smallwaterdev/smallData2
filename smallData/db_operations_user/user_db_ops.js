@@ -1,7 +1,9 @@
 const userDB = require('../db_models/user_db');
 const session_id = require('../config').session_id;
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
 
-const selected_field = "username email";
+const selected_field = "username email profile";
 
 
 function validateUsername(username){
@@ -53,7 +55,11 @@ function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
 }
-function signup(req, username, email, password, callback){
+function signup(req, res, callback){
+    let username = req.body.username;
+    let email = req.body.email;
+    let password = req.body.password;
+
     let result = validateUsername(username);
     if(result !== "OK"){
         callback({
@@ -82,139 +88,119 @@ function signup(req, username, email, password, callback){
         });
         return;
     }
-
-    userDB.findOne({username: username}, (err, value)=>{
-        if(err){
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    console.log(`${username}`);
+    console.log(`${email}`);
+    console.log(`${passport}`);
+    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+    userDB.register(new userDB({ username : username, email: email }), password, function(err, account) {
+        if (err) {
             callback({
                 success: false,
                 reasons:[err.message],
                 value:null
             });
-            return;
-        }else if(value){
-            callback({
-                success: false,
-                reasons:[`Username ${value.username} already existed`],
-                value:null
-            });
-            return;
         }else{
-            userDB.findOne({email: email}, (err2, value2)=>{
-                if(err2){
-                    callback({
-                        success: false,
-                        reasons:[err2.message],
-                        value:null
-                    });
-                    return;
-                }else if(value2){
-                    callback({
-                        success: false,
-                        reasons:[`Email ${value2.email} already registered`],
-                        value:null
-                    });
-                    return;
-                }else{
-                    // OK
-                    userDB.create({username: username, email: email, password: password}, (err3,result)=>{
-                        if(err3){
-                            callback({
-                                success: false,
-                                reasons:[err3.message],
-                                value:null
-                            });
-                            return;
-                        }else{
-                            req.session.username = result.username;
-                            userDB.findOne({username: username}, selected_field, (err4, fresult)=>{
-                                callback({
-                                    success: true,
-                                    value: fresult,
-                                    reasons:[],
-                                });
-                            });
-                        }
-                    });
-                }
+            passport.authenticate('local')(req, res, function () {
+                // add session
+                userDB.findOne({username: req.user.username}, selected_field, (err, userInfo)=>{
+                    if(err){
+                        callback({
+                            success: false,
+                            reasons:[err.message],
+                            value:null
+                        });
+                    }else{
+                        callback({
+                            success: true,
+                            reasons:[],
+                            value:userInfo
+                        });
+                    }
+                });
             });
         }
     });
 }
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
 
 // user can login with username or email
-function login(req, username_or_email, password, callback){
-    let isEmail = validateEmail(username_or_email);
-    // already login?
-    if(req.session.username){
+function login(req, res, callback){
+    if(!req.body.username){
         callback({
-           success: true,
-           value: "You already login",
-           reasons:[] 
+            success: false,
+            reasons:["Missing username"],
+            value:null
         });
         return;
     }
-
-    if(isEmail){
-        userDB.findOne({email: username_or_email, password: password}, selected_field, (err, result)=>{
+    if(validateEmail(req.body.username)){
+        userDB.findOne({email: req.body.username}, (err, user)=>{
             if(err){
                 callback({
                     success: false,
                     reasons:[err.message],
-                    value: null
+                    value:null
                 });
-            }else if(result){
-                req.session.username = result.username;
-                callback({
-                    success: true,
-                    reasons:[],
-                    value: result
-                });
+                return;
             }else{
-                callback({
-                    success: false,
-                    reasons:["The combination of your account and password does not existed"],
-                    value: null
+                req.body.username = user.username;
+                passport.authenticate('local')(req, res, function () {
+                    // add session
+                    userDB.findOne({username: req.user.username}, selected_field, (err, userInfo)=>{
+                        if(err){
+                            callback({
+                                success: false,
+                                reasons:[],
+                                value:null
+                            });
+                        }else{
+                            callback({
+                                success: true,
+                                reasons:[],
+                                value:userInfo
+                            });
+                        }
+                    });
                 });
             }
         });
     }else{
-        userDB.findOne({username: username_or_email, password: password}, selected_field,(err, result)=>{
-            if(err){
-                callback({
-                    success: false,
-                    reasons:[err.message],
-                    value: null
-                });
-            }else if(result){
-                req.session.username = result.username;
-                callback({
-                    success: true,
-                    reasons:[],
-                    value: result
-                });
-            }else{
-                callback({
-                    success: false,
-                    reasons:["The combination of your account and password does not existed"],
-                    value: null
-                });
-            }
+        passport.authenticate('local')(req, res, function () {
+            // add session
+            userDB.findOne({username: req.user.username}, selected_field, (err, userInfo)=>{
+                if(err){
+                    callback({
+                        success: false,
+                        reasons:[],
+                        value:null
+                    });
+                }else{
+                    callback({
+                        success: true,
+                        reasons:[],
+                        value:userInfo
+                    });
+                }
+            });
         });
     }
 }
 
 function queryUser(username, callback){
-    userDB.findOne({username: username}, selected_field, (err, result)=>{
+    userDB.findOne({username: username}, selected_field, (err, user)=>{
         if(err){
             callback({
                 success: false,
                 reasons: [err.message],
                 value: null
             });
-        }else if(result){
+        }else if(user){
             callback({
                 success: true,
-                value: result,
+                value: user,
                 reasons:[]
             });
         }else{
@@ -227,7 +213,7 @@ function queryUser(username, callback){
     });
 }
 function logout(req, res, callback){
-    if(req.session && req.session.username){
+    if(req.session){
         req.session.destroy();
         res.clearCookie(session_id);
         callback({
@@ -245,6 +231,10 @@ function logout(req, res, callback){
 }
 function deleteUser(username_or_email, callback){
 
+}
+function updatePassword(username, callback){
+    //user.setPassword save
+    //https://stackoverflow.com/questions/17828663/passport-local-mongoose-change-password
 }
 
 

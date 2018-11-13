@@ -17,7 +17,7 @@ signupRouter.route("/")
     res.sendStatus(200);
 })
 .post(cors.cors, (req, res, next)=>{
-    signup(req, req.body.username, req.body.email, req.body.password, (result)=>{
+    signup(req, res, (result)=>{
         res.statusCode = result.success?200:403;
         res.json(result);
     });

@@ -23,6 +23,17 @@ const queryMetaRoute = require('./user_routes/meta_routes/query_route');
 const signupRoute = require('./user_routes/user_routes/signup_route');
 const loginRoute = require('./user_routes/user_routes/login_route');
 const logoutRoute = require('./user_routes/user_routes/logout_route');
+// collection
+const createCollectionRoute = require('./user_routes/collection_routes/create_collection_route');
+const deleteCollectionRoute = require('./user_routes/collection_routes/delete_collection_route');
+const updateCollectionRoute = require('./user_routes/collection_routes/update_collection_route');
+const unSubscribeCollectionRoute = require('./user_routes/collection_routes/unsubscribe_collection_route');
+const subscribeCollectionRoute = require('./user_routes/collection_routes/subscribe_collection_route');
+const addContentToCollectionRouter = require('./user_routes/collection_routes/add_content_to_collection_route');
+const deleteContentFromCollectionRoute = require('./user_routes/collection_routes/delete_content_from_collection_route');
+
+
+
 // cors
 const cors = require('./user_routes/cors');
 ///////// Express middleware //////////
@@ -34,6 +45,7 @@ const session = require('express-session');
 const FileStore = require('session-file-store')(session);
 const session_key = require('./config').session_key;
 const session_id = require('./config').session_id;
+const passport = require('passport');
 
 user_app.use(logger('dev'));
 user_app.use(bodyParser.json());
@@ -49,6 +61,17 @@ user_app.use(session({
     resave: false,
     store: new FileStore(),
 }));
+user_app.use(passport.initialize());
+user_app.use(passport.session());
+
+////////// Passport configuration ////////////////////////
+const userDB = require('./db_models/user_db');
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy(userDB.authenticate()));
+passport.serializeUser(userDB.serializeUser());
+passport.deserializeUser(userDB.deserializeUser());
+
 
 ///////// Database configurations //////////
 const mongoose = require('mongoose');
@@ -86,7 +109,7 @@ function session_authentication(req, res, next){
     // console.log(req.session); 
     // this session is loaded from the file system with a key "file name" as the cookie
     // but using cookie is hidden from the developer.
-    if(req.session.username === undefined){
+    if(!req.user){
         res.statusCode = 403;
         res.json({
             success: false,
@@ -107,7 +130,13 @@ user_app.use(url_prefix + '/content/query', queryContentRoute);
 user_app.use(url_prefix + '/content/recommend', queryRecommendContentRoute);
 user_app.use(url_prefix + '/content/search', searchContentRoute);
 user_app.use(url_prefix + '/meta/query', queryMetaRoute);
-
+user_app.use(url_prefix + '/collection/create', createCollectionRoute);
+user_app.use(url_prefix + '/collection/delete', deleteCollectionRoute);
+user_app.use(url_prefix + '/collection/update', updateCollectionRoute);
+user_app.use(url_prefix + '/collection/subscribe', subscribeCollectionRoute);
+user_app.use(url_prefix + '/collection/unsubscribe', unSubscribeCollectionRoute);
+user_app.use(url_prefix + '/collection/addcontent', addContentToCollectionRouter);
+user_app.use(url_prefix + '/collection/deletecontent', deleteContentFromCollectionRoute);
 
 
 user_app.use(function(req, res, next) {
